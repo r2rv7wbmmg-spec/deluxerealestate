@@ -1,0 +1,98 @@
+/* Faqja kryesore */
+.hero{border-bottom:1px solid var(--line)}
+.hero-grid{display:grid;grid-template-columns:5fr 6fr;min-height:min(760px,calc(100vh - 118px))}
+.hero-l{padding:clamp(2.5rem,6vw,5rem) clamp(1rem,4vw,3.5rem) clamp(2rem,4vw,3rem) 0;display:flex;flex-direction:column;justify-content:space-between;gap:2.5rem}
+.hero h1{font-size:clamp(2.9rem,6vw,5.2rem);line-height:1.02}
+.hero h1 span{color:var(--gold);font-style:italic}
+.hero-l>div>p{color:var(--muted);font-size:1.08rem;max-width:42ch;margin:1.5rem 0 0}
+.hero-r{position:relative;margin-right:calc(-1 * max(clamp(1rem,4vw,2.5rem), (100vw - var(--wrap)) / 2 + clamp(1rem,4vw,2.5rem)));overflow:hidden;background:var(--panel)}
+.hero-r img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-cap{position:absolute;left:0;bottom:0;background:var(--black);padding:1.2rem 1.5rem 1.2rem 1.5rem;border-top:1px solid var(--gold-dark);border-right:1px solid var(--gold-dark);text-decoration:none;max-width:min(420px,90%);transition:background .2s}
+.hero-cap:hover{background:var(--panel)}
+.hero-cap small{color:var(--muted);font-size:.82rem}
+.hero-cap b{display:block;font-weight:500;margin:.15rem 0}
+.hero-cap span{color:var(--gold);font-family:var(--serif);font-size:1.3rem}
+.stats{display:flex;gap:2.5rem;flex-wrap:wrap}
+.stats div{display:grid}
+.stats b{font-family:var(--serif);font-weight:400;font-size:2.4rem;color:var(--gold);line-height:1}
+.stats span{font-size:.85rem;color:var(--muted);margin-top:.3rem}
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;min-height:0}
+  .hero-r{margin:0 calc(-1 * clamp(1rem,4vw,2.5rem));aspect-ratio:4/3;order:-1}
+  .hero-l{padding-right:0}
+}
+
+/* kërkimi */
+.search{background:var(--panel);border:1px solid var(--line);padding:1.2rem;display:grid;gap:1rem}
+.deal-tabs{display:flex;gap:0;border:1px solid var(--line);width:max-content}
+.deal-tabs label{cursor:pointer}
+.deal-tabs input{position:absolute;opacity:0;pointer-events:none}
+.deal-tabs span{display:block;padding:.55rem 1.3rem;font-size:.92rem;color:var(--muted);transition:background .2s,color .2s}
+.deal-tabs input:checked+span{background:var(--gold);color:var(--black)}
+.deal-tabs input:focus-visible+span{outline:2px solid var(--gold);outline-offset:2px}
+.s-fields{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.s-fields .wide{grid-column:1/-1}
+
+/* llojet */
+.types-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.types-list a{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:1.5rem;padding:1.3rem 0;border-bottom:1px solid var(--line);text-decoration:none;transition:padding .25s,color .2s}
+.types-list a:hover{padding-left:1rem;color:var(--gold)}
+.types-list b{font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3.4vw,2.6rem);line-height:1.1}
+.types-list span{color:var(--muted);font-size:.92rem}
+.types-list i{font-style:normal;color:var(--gold);font-size:1.3rem}
+.types-wrap{display:grid;grid-template-columns:1fr 1.6fr;gap:clamp(2rem,6vw,5rem);align-items:start}
+@media (max-width:860px){.types-wrap{grid-template-columns:1fr}}
+
+/* qytetet */
+.cities{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.city{position:relative;aspect-ratio:4/3;overflow:hidden;text-decoration:none;background:var(--panel)}
+.city img{width:100%;height:100%;object-fit:cover;filter:grayscale(.35) brightness(.7);transition:filter .5s,transform .9s cubic-bezier(.2,.7,.2,1)}
+.city:hover img{filter:none;transform:scale(1.04)}
+.city div{position:absolute;left:0;right:0;bottom:0;padding:1.2rem 1.3rem;background:linear-gradient(0deg,rgba(10,9,8,.85),transparent)}
+.city b{display:block;font-family:var(--serif);font-weight:400;font-size:2rem;line-height:1}
+.city span{font-size:.86rem;color:var(--gold-light)}
+@media (max-width:860px){.cities{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.cities{grid-template-columns:1fr}}
+
+/* vlerësimi */
+.val{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.val-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(2rem,6vw,5rem)}
+.val ol{list-style:none;margin:2rem 0 0;padding:0;display:grid;gap:1.4rem;counter-reset:s}
+.val li{counter-increment:s;display:grid;grid-template-columns:2.6rem 1fr;gap:1rem}
+.val li::before{content:counter(s);font-family:var(--serif);font-size:2rem;color:var(--gold);line-height:1}
+.val li b{display:block;font-weight:500}
+.val li span{color:var(--muted);font-size:.94rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-grid .wide{grid-column:1/-1}
+@media (max-width:860px){.val-grid,.form-grid{grid-template-columns:1fr}}
+
+/* agjentët */
+.agents{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem}
+.agent{border:1px solid var(--line);padding:1.6rem;display:flex;flex-direction:column;gap:.3rem}
+.agent .mono{width:72px;height:72px;border:1px solid var(--gold);display:grid;place-items:center;font-family:var(--serif);font-size:1.7rem;color:var(--gold);margin-bottom:1rem;overflow:hidden}
+.agent .mono img{width:100%;height:100%;object-fit:cover}
+.agent b{font-weight:500;font-size:1.05rem}
+.agent .role{color:var(--gold);font-size:.86rem}
+.agent p{color:var(--muted);font-size:.9rem;margin:.6rem 0 1rem}
+.agent .acts{display:flex;gap:.5rem;margin-top:auto}
+.agent .acts .icon-btn{width:40px;height:40px}
+.agent .acts .wa{color:#25C063}
+@media (max-width:1000px){.agents{grid-template-columns:1fr 1fr}}
+@media (max-width:540px){.agents{grid-template-columns:1fr}}
+
+/* përshtypjet */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+.quotes figure{margin:0;padding:2rem 2rem 2rem 0;border-right:1px solid var(--line)}
+.quotes figure+figure{padding-left:2rem}
+.quotes figure:last-child{border-right:0}
+.quotes blockquote{margin:0 0 1.2rem;font-family:var(--serif);font-size:1.35rem;line-height:1.4}
+.quotes figcaption{color:var(--muted);font-size:.9rem}
+.quotes figcaption b{color:var(--text);font-weight:500;display:block}
+@media (max-width:860px){.quotes{grid-template-columns:1fr}.quotes figure,.quotes figure+figure{padding:1.6rem 0;border-right:0;border-bottom:1px solid var(--line)}}
+
+/* thirrja në fund */
+.cta{border:1px solid var(--gold-dark);padding:clamp(2rem,5vw,3.5rem);display:flex;justify-content:space-between;align-items:center;gap:2rem;flex-wrap:wrap}
+.cta h2{max-width:18ch}
+.cta-btns{display:flex;gap:.7rem;flex-wrap:wrap}
+.btn.wa-btn{background:#1FA855;border-color:#1FA855;color:#fff}
+.btn.wa-btn:hover{background:#25C063;border-color:#25C063}
