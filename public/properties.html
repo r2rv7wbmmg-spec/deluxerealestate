@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pronat – De Luxe Real Estate</title>
+<link rel="icon" href="/img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<meta name="theme-color" content="#0A0908">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/list.css">
+<script src="/js/common.js" defer></script>
+<script src="/js/properties.js" defer></script>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+  <div class="page-head"><div class="wrap">
+    <div class="crumbs"><a href="/">Kreu</a> / Pronat</div>
+    <h1 id="title">Të gjitha pronat</h1>
+  </div></div>
+
+  <div class="wrap layout">
+    <form class="filters" id="filters" aria-label="Filtrat">
+      <button type="button" class="icon-btn f-close" id="f-close" aria-label="Mbyll filtrat"></button>
+      <h2>Filtrat</h2>
+      <div class="field"><span class="label">Marrëveshja</span>
+        <div class="seg">
+          <label><input type="radio" name="deal" value="" checked><span>Të gjitha</span></label>
+          <label><input type="radio" name="deal" value="shitje"><span>Shitje</span></label>
+          <label><input type="radio" name="deal" value="qira"><span>Qira</span></label>
+        </div></div>
+      <div class="field"><label for="f-q">Zona ose kërkim</label><input class="input" id="f-q" name="q" placeholder="Zona, rruga, kodi"><input type="hidden" name="zone" id="f-zone"></div>
+      <div class="field"><label for="f-city">Qyteti</label><select class="select" id="f-city" name="city"><option value="">Të gjitha qytetet</option></select></div>
+      <div class="field"><label for="f-type">Lloji</label><select class="select" id="f-type" name="type"><option value="">Të gjitha llojet</option></select></div>
+      <div class="field"><span class="label">Çmimi (€)</span><div class="row2"><input class="input" name="min" inputmode="numeric" placeholder="Nga" aria-label="Çmimi minimal"><input class="input" name="max" inputmode="numeric" placeholder="Deri" aria-label="Çmimi maksimal"></div></div>
+      <div class="row2">
+        <div class="field"><label for="f-rooms">Dhoma</label><select class="select" id="f-rooms" name="rooms"><option value="">Çdo</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option><option value="5">5+</option></select></div>
+        <div class="field"><label for="f-area">Min. m²</label><input class="input" id="f-area" name="minArea" inputmode="numeric" placeholder="P.sh. 80"></div>
+      </div>
+      <label class="check"><input type="checkbox" name="furnished" value="1">I/e mobiluar</label>
+      <label class="check"><input type="checkbox" name="parking" value="1">Me parkim</label>
+      <div class="f-actions"><button type="button" class="btn ghost sm" id="reset">Pastro filtrat</button></div>
+    </form>
+    <div class="f-apply"><button class="btn block" type="button" id="apply">Shfaq rezultatet</button></div>
+
+    <div id="results-wrap">
+      <div class="results-bar">
+        <span class="count" id="count">Po ngarkohen…</span>
+        <div class="rb-r">
+          <button class="btn ghost sm f-open" id="f-open" type="button">Filtrat</button>
+          <label class="sr" for="sort">Rendit</label>
+          <select class="select" id="sort" name="sort">
+            <option value="">Të rekomanduara</option><option value="newest">Më të rejat</option>
+            <option value="price_asc">Çmimi: nga më i ulëti</option><option value="price_desc">Çmimi: nga më i larti</option>
+            <option value="area_desc">Sipërfaqja më e madhe</option><option value="popular">Më të shikuarat</option>
+          </select>
+          <div class="view-toggle" role="group" aria-label="Pamja">
+            <button type="button" data-view="grid" aria-pressed="true" aria-label="Pamje rrjetë"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg></button>
+            <button type="button" data-view="list" aria-pressed="false" aria-label="Pamje listë"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="active-tags" id="tags"></div>
+      <div class="grid" id="grid"></div>
+      <nav class="pager" id="pager" aria-label="Faqet"></nav>
+    </div>
+  </div>
+</main>
+<div id="site-footer"></div>
+</body>
+</html>
