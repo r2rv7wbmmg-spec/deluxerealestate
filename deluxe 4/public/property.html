@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prona – De Luxe Real Estate</title>
+<link rel="icon" href="/img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<meta name="theme-color" content="#0A0908">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/property.css">
+<script src="/js/common.js" defer></script>
+<script src="/js/property.js" defer></script>
+</head>
+<body>
+<div id="site-header"></div>
+<main class="wrap" id="main">
+  <div class="crumbs" id="crumbs"><a href="/">Kreu</a> / <a href="/properties.html">Pronat</a></div>
+  <div class="gallery" id="gallery"><div class="skeleton" style="grid-row:span 2"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+  <div class="p-layout">
+    <div id="content"></div>
+    <aside class="side" id="side"></aside>
+  </div>
+  <section id="similar" style="padding-top:0"></section>
+</main>
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Fotot e pronës">
+  <button class="lb-btn lb-close" id="lb-close" aria-label="Mbyll">×</button>
+  <button class="lb-btn lb-prev" id="lb-prev" aria-label="Fotoja e mëparshme">‹</button>
+  <img id="lb-img" alt="">
+  <button class="lb-btn lb-next" id="lb-next" aria-label="Fotoja tjetër">›</button>
+  <span class="lb-count" id="lb-count"></span>
+</div>
+<div id="site-footer"></div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Paneli – De Luxe Real Estate</title>
+<link rel="icon" href="/img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<meta name="theme-color" content="#0A0908">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/admin/admin.css">
+<script src="/admin/admin.js" defer></script>
+</head>
+<body class="admin">
+<div id="app"><div class="login"><div class="skeleton" style="width:400px;height:320px"></div></div></div>
+
+<dialog class="modal wide" id="pmodal">
+  <div class="modal-h"><h3 id="pm-title">Pronë e re</h3><button class="icon-btn" type="button" data-close aria-label="Mbyll">×</button></div>
+  <form id="pform" novalidate>
+    <div class="modal-b scroll"><div class="pform">
+      <p class="note-box c4" id="pm-note" hidden></p>
+      <div class="field c4"><label for="p-title">Titulli *</label><input class="input" id="p-title" name="title" required maxlength="160" placeholder="P.sh. Apartament 2+1 me pamje nga liqeni"></div>
+      <div class="field"><label for="p-deal">Marrëveshja *</label><select class="select" id="p-deal" name="deal"><option value="shitje">Shitje</option><option value="qira">Qira</option></select></div>
+      <div class="field"><label for="p-type">Lloji *</label><select class="select" id="p-type" name="type"></select></div>
+      <div class="field"><label for="p-price">Çmimi (€) *</label><input class="input" id="p-price" name="price" type="number" min="0" required></div>
+      <div class="field"><label for="p-status">Statusi</label><select class="select" id="p-status" name="status"><option value="active">Aktive</option><option value="sold">E shitur</option><option value="rented">E dhënë me qira</option><option value="hidden">E fshehur</option></select></div>
+      <div class="field"><label for="p-city">Qyteti *</label><input class="input" id="p-city" name="city" list="city-list" required></div>
+      <div class="field"><label for="p-zone">Zona</label><input class="input" id="p-zone" name="zone" list="zone-list" autocomplete="off" placeholder="Zgjidhni ose shkruani"></div>
+      <div class="field c2"><label for="p-address">Adresa</label><input class="input" id="p-address" name="address"></div>
+      <h4>Detajet</h4>
+      <div class="field"><label for="p-area">Sipërfaqja (m²)</label><input class="input" id="p-area" name="area" type="number" min="0"></div>
+      <div class="field"><label for="p-rooms">Dhoma</label><input class="input" id="p-rooms" name="rooms" type="number" min="0"></div>
+      <div class="field"><label for="p-bath">Banjo</label><input class="input" id="p-bath" name="bathrooms" type="number" min="0"></div>
+      <div class="field"><label for="p-floor">Kati</label><input class="input" id="p-floor" name="floor" placeholder="P.sh. 4 ose 2 kate"></div>
+      <div class="field"><label for="p-year">Viti i ndërtimit</label><input class="input" id="p-year" name="year_built" type="number" min="1900" max="2100"></div>
+      <div class="field"><label for="p-parking">Vende parkimi</label><input class="input" id="p-parking" name="parking" type="number" min="0"></div>
+      <div class="field admin-only"><label for="p-agent">Agjenti</label><select class="select" id="p-agent" name="agent_id"><option value="">Pa agjent</option></select></div>
+      <div class="field" style="justify-content:end;align-content:end;gap:.7rem"><label class="check"><input type="checkbox" name="furnished">E mobiluar</label><label class="check admin-only"><input type="checkbox" name="featured">E përzgjedhur</label></div>
+      <div class="field c4"><label for="p-desc">Përshkrimi</label><textarea class="textarea" id="p-desc" name="description" style="min-height:140px"></textarea></div>
+      <div class="field c4"><label for="p-feat">Karakteristikat (ndajini me presje)</label><input class="input" id="p-feat" name="features" placeholder="Ashensor, Ballkon, Kondicioner"></div>
+      <div class="field"><label for="p-lat">Gjerësia (lat)</label><input class="input" id="p-lat" name="lat" inputmode="decimal" placeholder="41.3275"></div>
+      <div class="field"><label for="p-lng">Gjatësia (lng)</label><input class="input" id="p-lng" name="lng" inputmode="decimal" placeholder="19.8187"></div>
+      <div class="field c2" style="align-content:end"><small class="muted">Koordinatat i merrni nga Google Maps: kliko me të djathtën mbi pronë dhe kopjo numrat.</small></div>
+      <h4>Fotot</h4>
+      <label class="drop" id="drop" for="p-files">Tërhiqni fotot këtu ose klikoni për t’i zgjedhur (JPG, PNG, WEBP – deri në 8 MB secila)<input type="file" id="p-files" accept="image/jpeg,image/png,image/webp" multiple hidden></label>
+      <div class="url-add"><input class="input" id="p-url" placeholder="Ose ngjitni lidhjen e një fotoje (https://…)"><button class="btn ghost sm" type="button" id="p-url-add">Shto</button></div>
+      <div class="imgs" id="imgs"></div>
+    </div></div>
+    <div class="modal-f"><p class="form-msg" id="pm-msg" style="margin-right:auto;align-self:center"></p><button class="btn ghost" type="button" data-close>Anulo</button><button class="btn" type="submit" id="pm-save">Ruaj pronën</button></div>
+  </form>
+</dialog>
+
+<dialog class="modal" id="amodal">
+  <div class="modal-h"><h3 id="am-title">Agjent i ri</h3><button class="icon-btn" type="button" data-close aria-label="Mbyll">×</button></div>
+  <form id="aform" novalidate>
+    <div class="modal-b">
+      <div class="field"><label for="a-name">Emri dhe mbiemri *</label><input class="input" id="a-name" name="name" required></div>
+      <div class="field"><label for="a-level">Niveli (renditja në faqe)</label><select class="select" id="a-level" name="level"></select><small class="muted">Niveli më i lartë del i pari te “Agjentët tanë”.</small></div>
+      <div class="field"><label for="a-role">Titulli që shfaqet</label><input class="input" id="a-role" name="role" placeholder="Agjent Partner · Partner Agent"><small class="muted">Plotësohet vetë nga niveli – mund ta ndryshoni (p.sh. formë femërore ose anglisht).</small></div>
+      <div class="field"><label for="a-phone">Telefoni (edhe për WhatsApp)</label><input class="input" id="a-phone" name="phone" placeholder="+355 69 …"></div>
+      <div class="field"><label for="a-email">Email</label><input class="input" id="a-email" name="email" type="email"></div>
+      <div class="field"><label for="a-photo-f">Foto</label><div style="display:flex;gap:.6rem;align-items:center"><img id="a-prev" alt="" style="width:56px;height:56px;object-fit:cover;background:var(--panel-2);border:1px solid var(--line)"><input type="file" id="a-photo-f" accept="image/jpeg,image/png,image/webp"><input type="hidden" name="photo" id="a-photo"></div></div>
+      <div class="field"><label for="a-bio">Përshkrim i shkurtër</label><textarea class="textarea" id="a-bio" name="bio" style="min-height:90px"></textarea></div>
+      <h4 class="sub">Hyrja në panel</h4>
+      <div class="field"><label for="a-user">Përdoruesi</label><input class="input" id="a-user" name="username" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="p.sh. elira.kola"></div>
+      <div class="field"><label for="a-pass">Fjalëkalimi</label><div style="display:flex;gap:.5rem"><input class="input" id="a-pass" name="password" type="password" autocomplete="new-password"><button class="btn ghost sm" type="button" id="a-gen" style="min-height:48px">Krijo</button></div><small class="muted" id="a-pass-hint"></small></div>
+      <label class="check"><input type="checkbox" name="login_active" checked>Hyrja aktive (hiqeni për ta bllokuar agjentin)</label>
+    </div>
+    <div class="modal-f"><p class="form-msg" id="am-msg" style="margin-right:auto;align-self:center"></p><button class="btn ghost" type="button" data-close>Anulo</button><button class="btn" type="submit">Ruaj agjentin</button></div>
+  </form>
+</dialog>
+<dialog class="modal" id="rmodal">
+  <div class="modal-h"><h3>Refuzo <span id="r-code"></span></h3><button class="icon-btn" type="button" data-rclose aria-label="Mbyll">×</button></div>
+  <div class="modal-b">
+    <div class="field"><label for="r-note">Arsyeja (e sheh agjenti)</label><textarea class="textarea" id="r-note" placeholder="P.sh. Shtoni të paktën 5 foto dhe sipërfaqen e saktë."></textarea></div>
+  </div>
+  <div class="modal-f"><button class="btn ghost" type="button" data-rclose>Anulo</button><button class="btn" type="button" id="r-ok">Refuzo pronën</button></div>
+</dialog>
+<dialog class="modal wide" id="lmodal">
+  <div class="modal-h"><div><h3 id="lm-title">Lead</h3><small class="muted" id="lm-sub"></small></div><button class="icon-btn" type="button" data-close aria-label="Mbyll">×</button></div>
+  <div class="modal-b scroll">
+    <div class="quick" id="lm-quick"></div>
+    <details class="sec" id="lm-details"><summary>Të dhënat e klientit</summary>
+      <form id="lform" class="pform" novalidate>
+        <div class="field c2"><label for="l-name">Emri dhe mbiemri *</label><input class="input" id="l-name" name="name" autocomplete="off"></div>
+        <div class="field"><label for="l-phone">Telefoni</label><input class="input" id="l-phone" name="phone" type="tel" placeholder="+355 6…"></div>
+        <div class="field"><label for="l-email">Email</label><input class="input" id="l-email" name="email" type="email"></div>
+        <div class="field"><label for="l-type">Lloji i klientit</label><select class="select" id="l-type" name="client_type"></select></div>
+        <div class="field"><label for="l-source">Burimi</label><select class="select" id="l-source" name="source"></select></div>
+        <div class="field"><label for="l-status">Statusi</label><select class="select" id="l-status" name="status"></select></div>
+        <div class="field admin-only"><label for="l-agent">Agjenti</label><select class="select" id="l-agent" name="agent_id"></select></div>
+        <div class="field"><label for="l-ptype">Kërkon</label><input class="input" id="l-ptype" name="ptype" placeholder="Apartament 2+1, vilë…"></div>
+        <div class="field"><label for="l-city">Qyteti / zona</label><input class="input" id="l-city" name="city" list="city-list"></div>
+        <div class="field"><label for="l-bmin">Buxheti nga (€)</label><input class="input" id="l-bmin" name="budget_min" inputmode="numeric"></div>
+        <div class="field"><label for="l-bmax">Buxheti deri (€)</label><input class="input" id="l-bmax" name="budget_max" inputmode="numeric"></div>
+        <div class="field c4"><label for="l-notes">Shënime</label><textarea class="textarea" id="l-notes" name="notes" style="min-height:80px" placeholder="Preferenca, afate, familja, si paguan…"></textarea></div>
+        <div class="c4" style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap"><button class="btn" type="submit" id="lm-save">Ruaj</button><p class="form-msg" id="lm-msg" style="margin:0"></p></div>
+      </form>
+    </details>
+    <div id="lm-crm">
+      <div class="sec"><div class="sec-h"><h4>Opportunitete</h4><button class="btn ghost sm" type="button" id="lm-addopp">+ Opportunity</button></div><ul class="list-mini" id="lm-opps"></ul></div>
+      <div class="sec"><h4>Historiku</h4>
+        <form id="la-form" class="act-form" novalidate>
+          <select class="select" name="type" aria-label="Lloji"><option value="note">Shënim</option><option value="call">Telefonatë</option><option value="whatsapp">WhatsApp</option><option value="email">Email</option><option value="visit">Vizitë</option><option value="meeting">Takim</option></select>
+          <select class="select" name="opp_id" id="la-opp" aria-label="Opportunity"></select>
+          <textarea class="textarea" name="text" placeholder="Çfarë u fol? P.sh. “E pëlqeu, do vijë me bashkëshorten të shtunën.”" style="min-height:70px"></textarea>
+          <button class="btn sm" type="submit">Shto në historik</button>
+        </form>
+        <ul class="acts" id="lm-acts"></ul></div>
+    </div>
+  </div>
+  <div class="modal-f"><button class="btn ghost danger-t" type="button" id="lm-del" hidden style="margin-right:auto">Fshi lead-in</button><button class="btn ghost" type="button" data-close>Mbyll</button></div>
+</dialog>
+
+<dialog class="modal" id="omodal">
+  <div class="modal-h"><h3 id="om-title">Opportunity</h3><button class="icon-btn" type="button" data-close aria-label="Mbyll">×</button></div>
+  <form id="oform" novalidate>
+    <div class="modal-b scroll">
+      <div class="field"><label for="o-lead">Klienti (lead) *</label><select class="select" id="o-lead"></select></div>
+      <div class="field"><label for="o-prop">Prona</label><select class="select" id="o-prop" name="property_id"></select></div>
+      <div class="field"><label for="o-title">Titulli *</label><input class="input" id="o-title" name="title" placeholder="P.sh. Blerje apartamenti 2+1 në Bllok"></div>
+      <div class="row"><div class="field"><label for="o-deal">Marrëveshja</label><select class="select" id="o-deal" name="deal"><option value="shitje">Shitje</option><option value="qira">Qira</option></select></div>
+        <div class="field"><label for="o-stage">Faza</label><select class="select" id="o-stage" name="stage"></select></div></div>
+      <div class="row"><div class="field"><label for="o-value">Vlera (€)</label><input class="input" id="o-value" name="value" inputmode="numeric"></div>
+        <div class="field"><label for="o-comm">Komisioni (€)</label><input class="input" id="o-comm" name="commission" inputmode="numeric"></div></div>
+      <div class="row"><div class="field"><label for="o-next">Hapi i radhës</label><input class="input" id="o-next" name="next_action" placeholder="Telefono, cakto vizitë, dërgo ofertën…"></div>
+        <div class="field"><label for="o-date">Data</label><input class="input" id="o-date" name="next_date" type="date"></div></div>
+      <div class="field" id="o-lostf" hidden><label for="o-lost">Arsyeja e humbjes</label><input class="input" id="o-lost" name="lost_reason"></div>
+      <div class="field admin-only"><label for="o-agent">Agjenti</label><select class="select" id="o-agent" name="agent_id"></select></div>
+    </div>
+    <div class="modal-f"><button class="btn ghost danger-t" type="button" id="om-del" hidden style="margin-right:auto">Fshi</button><button class="btn ghost" type="button" id="om-lead" hidden>Hap lead-in</button><p class="form-msg" id="om-msg" style="align-self:center;margin:0"></p><button class="btn" type="submit">Ruaj</button></div>
+  </form>
+</dialog>
+
+<dialog class="modal" id="qmodal">
+  <div class="modal-h"><h3 id="q-title"></h3><button class="icon-btn" type="button" data-qclose aria-label="Mbyll">×</button></div>
+  <div class="modal-b"><div class="field"><label for="q-text" id="q-label"></label><textarea class="textarea" id="q-text" style="min-height:80px"></textarea></div></div>
+  <div class="modal-f"><button class="btn ghost" type="button" data-qclose>Anulo</button><button class="btn" type="button" id="q-ok">OK</button></div>
+</dialog>
+
+<dialog class="modal" id="cmodal">
+  <div class="modal-h"><h3>Hyrja e agjentit</h3><button class="icon-btn" type="button" data-close aria-label="Mbyll">×</button></div>
+  <div class="modal-b">
+    <p class="muted" style="margin:0">Dërgojani agjentit këto të dhëna. Ai mund ta ndryshojë fjalëkalimin te <b style="color:var(--text)">Llogaria</b> pasi të hyjë.</p>
+    <pre class="cred" id="c-text"></pre>
+  </div>
+  <div class="modal-f"><button class="btn ghost" type="button" id="c-copy">Kopjo</button><a class="btn" id="c-wa" href="#" target="_blank" rel="noopener" style="background:#1FA855;border-color:#1FA855;color:#fff">Dërgo në WhatsApp</a></div>
+</dialog>
+<datalist id="zone-list"></datalist>
+<datalist id="zone-city-list"></datalist>
+<datalist id="city-list"><option>Tiranë</option><option>Durrës</option><option>Vlorë</option><option>Shkodër</option><option>Sarandë</option><option>Pogradec</option><option>Korçë</option><option>Elbasan</option><option>Fier</option><option>Berat</option><option>Himarë</option><option>Ksamil</option></datalist>
+</body>
+</html>
