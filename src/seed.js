@@ -57,7 +57,7 @@ const P = [
   ['Tokë për ndërtim pranë detit','shitje','Tokë','Vlorë','Radhimë','Rruga Vlorë–Orikum',240000,1200,0,0,'',null,0,0,40.3994,19.4729,0,4,'land',0],
   ['Apartament 3+1 pranë liqenit','qira','Apartament','Pogradec','Bregu i liqenit','Rruga Rinia',600,110,3,2,'3',2015,1,1,40.9025,20.6525,0,2,'interior',7],
   ['Zyrë në qendër të Durrësit','qira','Zyrë','Durrës','Qendër','Rruga Egnatia',750,70,2,1,'1',2014,0,0,41.3134,19.4458,0,3,'office',1],
-  ['Shtëpi familjare 4+1 me kopsht','shitje','Vilë','Tiranë','Lunder','Rruga e Lundrës',410000,240,4,3,'2 kate',2012,0,2,41.2905,19.8678,0,1,'house',0],
+  ['Shtëpi familjare 4+1 me kopsht','shitje','Vilë','Tiranë','Lundër','Rruga e Lundrës',410000,240,4,3,'2 kate',2012,0,2,41.2905,19.8678,0,1,'house',0],
   ['Penthouse me tarracë 120 m²','qira','Apartament','Tiranë','Tirana e Re','Rruga Sami Frashëri',2400,180,3,3,'12',2023,1,2,41.3149,19.8128,1,2,'interior',1],
   ['Dyqan me qira në pedonale','qira','Dyqan','Shkodër','Pedonalja','Rruga Kolë Idromeno',1100,55,1,1,'0',2010,0,0,42.0683,19.5126,0,3,'shop',1]
 ];

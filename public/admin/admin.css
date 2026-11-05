@@ -184,3 +184,7 @@ a.stat:hover{border-color:var(--gold)}
 @media (max-width:900px){.crm-top{grid-template-columns:1fr}.act-form{grid-template-columns:1fr}.kanban{grid-auto-columns:82%}}
 .side-nav .logo-img{height:40px}.side-nav .logo-word{height:24px}.side-nav .logo-text small{display:block;margin-top:4px}
 .login .logo-full{margin:0 auto}
+.hero-pick{display:grid;grid-template-columns:220px 1fr;gap:1.2rem}
+.hero-prev{aspect-ratio:4/5;background:var(--panel-2);border:1px solid var(--line);overflow:hidden}
+.hero-prev img{width:100%;height:100%;object-fit:cover;display:block}
+@media (max-width:640px){.hero-pick{grid-template-columns:1fr}.hero-prev{max-width:240px}}

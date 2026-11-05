@@ -22,8 +22,8 @@
   <div class="hero"><div class="wrap hero-grid">
     <div class="hero-l">
       <div>
-        <h1>Prona të zgjedhura me kujdes, nga Tirana deri në <span>bregdet</span></h1>
-        <p>Vila, apartamente dhe hapësira biznesi që i kemi parë vetë. Ju tregojmë vetëm ato që ia vlejnë kohës suaj.</p>
+        <h1 id="hero-title">Prona elitare të tipologjive të ndryshme nga çdo cep i <span>Shqipërisë</span>, të përzgjedhura për klientët tanë</h1>
+        <p id="hero-text">Vila, apartamente dhe hapësira biznesi që i kemi parë vetë. Ju tregojmë vetëm ato që ia vlejnë kohës suaj.</p>
       </div>
       <form class="search" id="search" action="/properties.html">
         <div class="deal-tabs" role="radiogroup" aria-label="Lloji i marrëveshjes">
@@ -31,7 +31,7 @@
           <label><input type="radio" name="deal" value="qira"><span>Merr me qira</span></label>
         </div>
         <div class="s-fields">
-          <div class="field wide"><label for="s-q">Zona, rruga ose kodi i pronës</label><input class="input" id="s-q" name="q" placeholder="P.sh. Blloku, Lungomare, DLX-1002"></div>
+          <div class="field wide"><input type="hidden" name="zone" id="s-zone"><label for="s-q">Zona, rruga ose kodi i pronës</label><input class="input" id="s-q" name="q" placeholder="Shkruani p.sh. Bllok, Komuna e Parisit, DLX-1002"></div>
           <div class="field"><label for="s-city">Qyteti</label><select class="select" id="s-city" name="city"><option value="">Të gjitha</option></select></div>
           <div class="field"><label for="s-type">Lloji</label><select class="select" id="s-type" name="type"><option value="">Të gjitha</option></select></div>
           <div class="field"><label for="s-max">Buxheti maksimal</label><select class="select" id="s-max" name="max"></select></div>

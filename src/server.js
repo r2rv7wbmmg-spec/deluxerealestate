@@ -7,6 +7,7 @@ const { db, hashPassword, verifyPassword } = require('./db');
 const config = require('./config');
 const chat = require('./chat');
 const crm = require('./crm');
+const { ZONES } = require('./zones');
 
 if (db.prepare('SELECT COUNT(*) AS n FROM properties').get().n === 0) require('./seed');
 
@@ -108,6 +109,18 @@ function propertyInput(b) {
   return p;
 }
 
+/* ---------- cilësimet e faqes (foto kryesore, tekstet e hyrjes) ---------- */
+const SETTING_KEYS = ['hero_image', 'hero_property_id', 'hero_title', 'hero_text'];
+function getSettings() {
+  const out = Object.fromEntries(SETTING_KEYS.map(k => [k, '']));
+  for (const r of db.prepare('SELECT key, value FROM settings').all()) if (SETTING_KEYS.includes(r.key)) out[r.key] = r.value;
+  if (out.hero_property_id) {
+    const p = db.prepare("SELECT id, title, city, zone, price, deal, images FROM properties WHERE id = ? AND status = 'active' AND approval = 'approved'").get(Number(out.hero_property_id));
+    out.hero_property = p ? { ...p, images: JSON.parse(p.images || '[]') } : null;
+  }
+  return out;
+}
+
 /* ---------- rrugët e API-t ---------- */
 const routes = [];
 const route = (method, pattern, handler) => routes.push({ method, re: new RegExp('^' + pattern.replace(/:(\w+)/g, '(?<$1>[^/]+)') + '/?$'), handler });
@@ -119,7 +132,7 @@ route('GET', '/api/meta', () => {
   const types = db.prepare(`SELECT type, COUNT(*) AS count FROM properties WHERE ${LIVE} GROUP BY type`).all();
   const totals = db.prepare(`SELECT COUNT(*) AS active, SUM(deal='shitje') AS sale, SUM(deal='qira') AS rent FROM properties WHERE ${LIVE}`).get();
   const closed = db.prepare("SELECT COUNT(*) AS n FROM properties WHERE status IN ('sold','rented') AND approval='approved'").get().n;
-  return { site: config.site, cities, types, totals: { ...totals, closed }, allTypes: TYPES };
+  return { site: config.site, cities, types, totals: { ...totals, closed }, allTypes: TYPES, zones: ZONES, settings: getSettings() };
 });
 
 route('GET', '/api/properties', ({ query }) => {
@@ -132,6 +145,7 @@ route('GET', '/api/properties', ({ query }) => {
   }
   if (q.deal === 'shitje' || q.deal === 'qira') { where.push('deal = ?'); params.push(q.deal); }
   if (q.city) { where.push('city = ?'); params.push(q.city); }
+  if (q.zone) { where.push('zone = ?'); params.push(str(q.zone, 80)); }
   if (q.type && TYPES.includes(q.type)) { where.push('type = ?'); params.push(q.type); }
   if (q.min) { where.push('price >= ?'); params.push(int(q.min)); }
   if (q.max) { where.push('price <= ?'); params.push(int(q.max)); }
@@ -387,6 +401,18 @@ route('DELETE', '/api/admin/agents/:id', ({ req, params }) => {
   return { ok: true };
 });
 
+route('GET', '/api/admin/settings', ({ req }) => { requireAdmin(req); return getSettings(); });
+route('PUT', '/api/admin/settings', async ({ req }) => {
+  requireAdmin(req); const b = await readBody(req);
+  const v = {
+    hero_image: /^(\/uploads\/|https?:\/\/)/.test(str(b.hero_image, 600)) ? str(b.hero_image, 600) : '',
+    hero_property_id: b.hero_property_id ? String(int(b.hero_property_id, '')) : '',
+    hero_title: str(b.hero_title, 140), hero_text: str(b.hero_text, 300)
+  };
+  const up = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value');
+  for (const [k, val] of Object.entries(v)) up.run(k, val);
+  return getSettings();
+});
 route('GET', '/api/admin/subscribers', ({ req }) => { requireAdmin(req); return db.prepare('SELECT * FROM subscribers ORDER BY created_at DESC').all(); });
 route('DELETE', '/api/admin/subscribers/:id', ({ req, params }) => { requireAdmin(req); db.prepare('DELETE FROM subscribers WHERE id = ?').run(int(params.id)); return { ok: true }; });
 

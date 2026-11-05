@@ -2,7 +2,7 @@
 .hero{border-bottom:1px solid var(--line)}
 .hero-grid{display:grid;grid-template-columns:5fr 6fr;min-height:min(760px,calc(100vh - 118px))}
 .hero-l{padding:clamp(2.5rem,6vw,5rem) clamp(1rem,4vw,3.5rem) clamp(2rem,4vw,3rem) 0;display:flex;flex-direction:column;justify-content:space-between;gap:2.5rem}
-.hero h1{font-size:clamp(2.9rem,6vw,5.2rem);line-height:1.02}
+.hero h1{font-size:clamp(2.3rem,4.4vw,3.9rem);line-height:1.08}
 .hero h1 span{color:var(--gold);font-style:italic}
 .hero-l>div>p{color:var(--muted);font-size:1.08rem;max-width:42ch;margin:1.5rem 0 0}
 .hero-r{position:relative;margin-right:calc(-1 * max(clamp(1rem,4vw,2.5rem), (100vw - var(--wrap)) / 2 + clamp(1rem,4vw,2.5rem)));overflow:hidden;background:var(--panel)}
@@ -96,3 +96,5 @@
 .cta-btns{display:flex;gap:.7rem;flex-wrap:wrap}
 .btn.wa-btn{background:#1FA855;border-color:#1FA855;color:#fff}
 .btn.wa-btn:hover{background:#25C063;border-color:#25C063}
+.hero-logo{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#1A1712 0%,var(--black) 70%)}
+.hero-logo img{width:min(360px,60%);height:auto}

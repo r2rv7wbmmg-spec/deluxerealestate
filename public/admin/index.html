@@ -28,7 +28,7 @@
       <div class="field"><label for="p-price">Çmimi (€) *</label><input class="input" id="p-price" name="price" type="number" min="0" required></div>
       <div class="field"><label for="p-status">Statusi</label><select class="select" id="p-status" name="status"><option value="active">Aktive</option><option value="sold">E shitur</option><option value="rented">E dhënë me qira</option><option value="hidden">E fshehur</option></select></div>
       <div class="field"><label for="p-city">Qyteti *</label><input class="input" id="p-city" name="city" list="city-list" required></div>
-      <div class="field"><label for="p-zone">Zona</label><input class="input" id="p-zone" name="zone"></div>
+      <div class="field"><label for="p-zone">Zona</label><input class="input" id="p-zone" name="zone" list="zone-list" autocomplete="off" placeholder="Zgjidhni ose shkruani"></div>
       <div class="field c2"><label for="p-address">Adresa</label><input class="input" id="p-address" name="address"></div>
       <h4>Detajet</h4>
       <div class="field"><label for="p-area">Sipërfaqja (m²)</label><input class="input" id="p-area" name="area" type="number" min="0"></div>
@@ -149,6 +149,8 @@
   </div>
   <div class="modal-f"><button class="btn ghost" type="button" id="c-copy">Kopjo</button><a class="btn" id="c-wa" href="#" target="_blank" rel="noopener" style="background:#1FA855;border-color:#1FA855;color:#fff">Dërgo në WhatsApp</a></div>
 </dialog>
+<datalist id="zone-list"></datalist>
+<datalist id="zone-city-list"></datalist>
 <datalist id="city-list"><option>Tiranë</option><option>Durrës</option><option>Vlorë</option><option>Shkodër</option><option>Sarandë</option><option>Pogradec</option><option>Korçë</option><option>Elbasan</option><option>Fier</option><option>Berat</option><option>Himarë</option><option>Ksamil</option></datalist>
 </body>
 </html>

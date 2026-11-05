@@ -132,6 +132,7 @@ CREATE TABLE IF NOT EXISTS activities (
   created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_act_lead ON activities(lead_id);
+CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT DEFAULT '');
 `);
 
 // Migrime: shton kolonat e reja në databazat ekzistuese pa humbur të dhëna

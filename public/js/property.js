@@ -1,6 +1,6 @@
 /* Detajet e pronës */
 (async () => {
-  const { $, esc, fmt, api, meta, card, imgTag, bindInquiry, favs, I, waLink, roomsLabel, toast } = DL;
+  const { $, $$, esc, fmt, api, meta, card, imgTag, bindInquiry, favs, I, waLink, roomsLabel, toast } = DL;
   const id = Number(new URLSearchParams(location.search).get('id'));
   let p;
   try {
@@ -18,16 +18,49 @@
   /* galeria */
   const imgs = p.images.length ? p.images : [DL.FALLBACK];
   const g = $('#gallery');
-  const shown = imgs.slice(0, 5);
-  g.className = 'gallery' + (shown.length < 5 ? ' n' + shown.length : '');
-  g.innerHTML = shown.map((src, i) => `<button type="button" data-i="${i}" aria-label="Hap foton ${i + 1}">${imgTag(src, `${p.title} – foto ${i + 1}`)}</button>`).join('') +
-    (imgs.length > 1 ? `<span class="all"><button class="btn sm" type="button" data-i="0" style="cursor:pointer">Të gjitha fotot (${imgs.length})</button></span>` : '');
+  const many = imgs.length > 1;
+  const FULL = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  g.className = 'pgal';
+  g.innerHTML = `<div class="pg-main">
+      <div class="pg-track" id="pg-track" role="group" aria-roledescription="galeri" aria-label="Fotot e pronës">${imgs.map((src, i) => `<span class="pg-slide">${imgTag(src, `${p.title} – foto ${i + 1}`)}</span>`).join('')}</div>
+      ${many ? `<button type="button" class="pg-nav prev" data-pg="-1" aria-label="Fotoja e mëparshme">‹</button><button type="button" class="pg-nav next" data-pg="1" aria-label="Fotoja tjetër">›</button><span class="pg-count" id="pg-count">1 / ${imgs.length}</span>` : ''}
+      <button type="button" class="pg-full" id="pg-full" aria-label="Shiko në ekran të plotë">${FULL}</button>
+    </div>
+    ${many ? `<div class="pg-thumbs" id="pg-thumbs">${imgs.map((src, i) => `<button type="button" data-th="${i}" class="${i ? '' : 'on'}" aria-label="Foto ${i + 1}">${imgTag(src, '')}</button>`).join('')}</div>` : ''}`;
+  const track = $('#pg-track');
+  const curIdx = () => Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+  const goTo = i => { i = (i + imgs.length) % imgs.length; track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' }); };
+  let rafG = 0;
+  track.addEventListener('scroll', () => {
+    cancelAnimationFrame(rafG);
+    rafG = requestAnimationFrame(() => {
+      const i = curIdx();
+      if ($('#pg-count')) $('#pg-count').textContent = `${i + 1} / ${imgs.length}`;
+      $$('#pg-thumbs [data-th]').forEach((b, k) => b.classList.toggle('on', k === i));
+      const th = $(`#pg-thumbs [data-th="${i}"]`);
+      if (th) { const box = $('#pg-thumbs'); box.scrollTo({ left: th.offsetLeft - box.clientWidth / 2 + th.clientWidth / 2, behavior: 'smooth' }); }
+    });
+  });
+  g.addEventListener('click', e => {
+    const nav = e.target.closest('[data-pg]'); if (nav) return goTo(curIdx() + Number(nav.dataset.pg));
+    const th = e.target.closest('[data-th]'); if (th) return goTo(Number(th.dataset.th));
+    if (e.target.closest('#pg-full')) return openLb(curIdx());
+    if (e.target.closest('#pg-track')) {
+      if (!many) return openLb(0);
+      const r = track.getBoundingClientRect(); goTo(curIdx() + (e.clientX - r.left < r.width / 3 ? -1 : 1));
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if ($('#lb').classList.contains('open') || e.target.closest('input,textarea,select')) return;
+    if (e.key === 'ArrowLeft' && many) goTo(curIdx() - 1);
+    if (e.key === 'ArrowRight' && many) goTo(curIdx() + 1);
+  });
+  window.addEventListener('resize', () => track.scrollTo({ left: curIdx() * track.clientWidth }));
   let cur = 0;
   const lb = $('#lb');
   const show = i => { cur = (i + imgs.length) % imgs.length; $('#lb-img').src = imgs[cur]; $('#lb-img').alt = `${p.title} – foto ${cur + 1}`; $('#lb-count').textContent = `${cur + 1} / ${imgs.length}`; };
   const openLb = i => { show(i); lb.classList.add('open'); document.body.style.overflow = 'hidden'; $('#lb-close').focus(); };
-  const closeLb = () => { lb.classList.remove('open'); document.body.style.overflow = ''; };
-  g.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) openLb(Number(b.dataset.i)); });
+  const closeLb = () => { lb.classList.remove('open'); document.body.style.overflow = ''; track.scrollTo({ left: cur * track.clientWidth }); };
   $('#lb-prev').onclick = () => show(cur - 1); $('#lb-next').onclick = () => show(cur + 1); $('#lb-close').onclick = closeLb;
   lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
   document.addEventListener('keydown', e => { if (!lb.classList.contains('open')) return; if (e.key === 'Escape') closeLb(); if (e.key === 'ArrowLeft') show(cur - 1); if (e.key === 'ArrowRight') show(cur + 1); });

@@ -2,8 +2,8 @@
 (async () => {
   const { $, $$, esc, fmt, api, meta, card, skeletons, I } = DL;
   const form = $('#filters'), grid = $('#grid');
-  const KEYS = ['deal', 'q', 'city', 'type', 'min', 'max', 'rooms', 'minArea', 'furnished', 'parking'];
-  const LABEL = { deal: v => v === 'qira' ? 'Me qira' : 'Në shitje', q: v => `“${v}”`, city: v => v, type: v => v, min: v => `nga ${fmt(v)} €`, max: v => `deri ${fmt(v)} €`, rooms: v => `${v}+ dhoma`, minArea: v => `min. ${v} m²`, furnished: () => 'I mobiluar', parking: () => 'Me parkim' };
+  const KEYS = ['deal', 'q', 'city', 'zone', 'type', 'min', 'max', 'rooms', 'minArea', 'furnished', 'parking'];
+  const LABEL = { deal: v => v === 'qira' ? 'Me qira' : 'Në shitje', q: v => `“${v}”`, city: v => v, zone: v => `Zona: ${v}`, type: v => v, min: v => `nga ${fmt(v)} €`, max: v => `deri ${fmt(v)} €`, rooms: v => `${v}+ dhoma`, minArea: v => `min. ${v} m²`, furnished: () => 'I mobiluar', parking: () => 'Me parkim' };
   let page = 1, timer;
   $('#f-close').innerHTML = I.close;
 
@@ -15,7 +15,13 @@
   if (m) {
     $('#f-city').innerHTML += m.cities.map(c => `<option>${esc(c.city)}</option>`).join('');
     $('#f-type').innerHTML += m.allTypes.map(t => `<option>${esc(t)}</option>`).join('');
+    Object.keys(m.zones || {}).forEach(c => { if (!m.cities.some(x => x.city === c)) $('#f-city').innerHTML += `<option>${esc(c)}</option>`; });
   }
+  DL.zoneAutocomplete($('#f-q'), m?.zones || {}, (m?.cities || []).map(c => c.city), x => {
+    $('#f-city').value = x.city; $('#f-zone').value = x.zone; $('#f-q').value = '';
+    page = 1; if (innerWidth > 960) load();
+  });
+  $('#f-city').addEventListener('change', () => { $('#f-zone').value = ''; });
 
   const setField = (el, v) => {
     if (el instanceof RadioNodeList) [...el].forEach(r => r.checked = r.value === v);
@@ -37,7 +43,7 @@
     KEYS.forEach(k => {
       const el = form.elements[k];
       const v = el.type === 'checkbox' ? (el.checked ? '1' : '') : String(el.value || '').trim().replace(/\./g, '');
-      if (v) s[k] = k === 'q' || k === 'city' || k === 'type' || k === 'deal' ? String(form.elements[k].value).trim() : v;
+      if (v) s[k] = k === 'q' || k === 'city' || k === 'zone' || k === 'type' || k === 'deal' ? String(form.elements[k].value).trim() : v;
     });
     if ($('#sort').value) s.sort = $('#sort').value;
     return s;
@@ -47,7 +53,7 @@
     const s = state();
     const qs = new URLSearchParams({ ...s, ...(page > 1 ? { page } : {}) });
     history.replaceState(null, '', '/properties.html' + (qs.toString() ? '?' + qs : ''));
-    $('#title').textContent = s.deal === 'qira' ? 'Prona me qira' : s.deal === 'shitje' ? 'Prona në shitje' : 'Të gjitha pronat';
+    $('#title').textContent = (s.deal === 'qira' ? 'Prona me qira' : s.deal === 'shitje' ? 'Prona në shitje' : 'Të gjitha pronat') + (s.zone ? ` – ${s.zone}` : '');
     document.title = $('#title').textContent + (s.city ? ` në ${s.city}` : '') + ' – De Luxe Real Estate';
     $('#tags').innerHTML = Object.keys(s).filter(k => LABEL[k]).map(k => `<button type="button" data-clear="${k}" aria-label="Hiq filtrin">${esc(LABEL[k](s[k]))} <span aria-hidden="true">×</span></button>`).join('');
     grid.innerHTML = skeletons(6);
@@ -74,7 +80,7 @@
       nums.map(n => n === '…' ? '<button type="button" disabled>…</button>' : `<button type="button" data-p="${n}" ${n === page ? 'aria-current="page"' : ''}>${n}</button>`).join('') +
       `<button type="button" data-p="${page + 1}" ${page === pages ? 'disabled' : ''} aria-label="Faqja tjetër">›</button>`;
   }
-  function reset() { form.reset(); setField(form.elements.deal, ''); $('#sort').value = ''; page = 1; load(); }
+  function reset() { form.reset(); $('#f-zone').value = ''; setField(form.elements.deal, ''); $('#sort').value = ''; page = 1; load(); }
 
   form.addEventListener('change', () => { page = 1; if (innerWidth > 960) load(); });
   form.addEventListener('input', e => { if (e.target.matches('input[type=text],input:not([type]),[inputmode]')) { clearTimeout(timer); timer = setTimeout(() => { page = 1; if (innerWidth > 960) load(); }, 450); } });
@@ -85,6 +91,7 @@
   $('#tags').addEventListener('click', e => {
     const b = e.target.closest('[data-clear]'); if (!b) return;
     setField(form.elements[b.dataset.clear], '');
+    if (b.dataset.clear === 'city') $('#f-zone').value = '';
     page = 1; load();
   });
   $$('.view-toggle button').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));

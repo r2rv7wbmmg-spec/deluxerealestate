@@ -18,6 +18,10 @@ npm start            # ose: node src/server.js
 Në nisjen e parë databaza (`data/deluxe.db`) krijohet vetë dhe mbushet me 16 prona dhe 4 agjentë shembull.
 Për t'i fshirë shembujt dhe rifilluar: `npm run seed`. Për të filluar bosh, fshini pronat nga paneli.
 
+## Lagjet
+
+Lista e lagjeve të Tiranës (dhe e qyteteve të tjera, nëse i shtoni) është te `src/zones.js`. Ato dalin si zgjedhje te kërkimi në faqen kryesore, te filtrat e listës, si sugjerime kur shtoni një pronë në panel, dhe asistenti i kupton në pyetje (p.sh. “apartament në Bllok”). Për të shtuar një qytet: `'Durrës': ['Plazh', 'Currila', ...]`.
+
 ## Të dhënat e biznesit
 
 Ndryshoni telefonin, numrin e WhatsApp, email-in, adresën dhe orarin te `src/config.js` ose me variabla mjedisi (shih `.env.example`).

@@ -25,15 +25,33 @@
 
     // Zgjedhjet e kërkimit
     const cityOpts = m.cities.map(c => `<option>${esc(c.city)}</option>`).join('');
-    $('#s-city').innerHTML += cityOpts;
+    const extraCities = Object.keys(m.zones || {}).filter(c => !m.cities.some(x => x.city === c));
+    $('#s-city').innerHTML += cityOpts + extraCities.map(c => `<option>${esc(c)}</option>`).join('');
+    const qIn = $('#s-q'), zIn = $('#s-zone'), basePh = qIn.placeholder;
+    const clearZone = () => { if (zIn.value) { zIn.value = ''; qIn.placeholder = basePh; } };
+    DL.zoneAutocomplete(qIn, m.zones || {}, m.cities.map(c => c.city), x => {
+      $('#s-city').value = x.city; zIn.value = x.zone; qIn.value = '';
+      qIn.placeholder = x.zone ? `Zona: ${x.zone} ✓` : `Qyteti: ${x.city} ✓`;
+    });
+    qIn.addEventListener('input', () => { if (qIn.value) clearZone(); });
+    $('#s-city').addEventListener('change', clearZone);
     $('#v-city').innerHTML = cityOpts + '<option>Tjetër</option>';
     const typeOpts = m.allTypes.map(t => `<option value="${esc(t)}">${esc(TYPE_PLURAL[t] || t)}</option>`).join('');
     $('#s-type').innerHTML += typeOpts;
     $('#v-type').innerHTML = m.allTypes.map(t => `<option>${esc(t)}</option>`).join('');
 
-    // Fotoja kryesore = prona e parë e përzgjedhur
-    const hero = all.items.find(p => p.featured && p.type === 'Vilë') || featured.items[0];
-    if (hero) $('#hero-photo').innerHTML = `${imgTag(hero.images[0], hero.title)}<a class="hero-cap" href="/property.html?id=${hero.id}"><small>${esc(hero.zone)}, ${esc(hero.city)}</small><b>${esc(hero.title)}</b><span>${fmt(hero.price)} €${hero.deal === 'qira' ? ' / muaj' : ''}</span></a>`;
+    // Fotoja dhe tekstet e hyrjes: nga paneli (Faqja), përndryshe nga pronat e përzgjedhura
+    const S = m.settings || {};
+    if (S.hero_title) $('#hero-title').innerHTML = esc(S.hero_title).replace(/\*([^*]+)\*/g, '<span>$1</span>');
+    if (S.hero_text) $('#hero-text').textContent = S.hero_text;
+    const linked = S.hero_property || null;
+    const auto = all.items.find(p => p.featured && p.images.length) || all.items.find(p => p.images.length) || null;
+    const heroProp = linked || (S.hero_image ? null : auto);
+    const heroImg = S.hero_image || heroProp?.images?.[0];
+    const cap = heroProp ? `<a class="hero-cap" href="/property.html?id=${heroProp.id}"><small>${esc([heroProp.zone, heroProp.city].filter(Boolean).join(', '))}</small><b>${esc(heroProp.title)}</b><span>${fmt(heroProp.price)} €${heroProp.deal === 'qira' ? ' / muaj' : ''}</span></a>` : '';
+    $('#hero-photo').innerHTML = heroImg
+      ? `${imgTag(heroImg, heroProp?.title || 'De Luxe Real Estate')}${cap}`
+      : `<div class="hero-logo"><img src="/img/logo-full.png" alt="De Luxe Real Estate – Live Beyond Ordinary."></div>`;
 
     $('#featured').innerHTML = featured.items.length ? featured.items.map(card).join('') : '<div class="empty"><h3>Së shpejti</h3>Pronat e përzgjedhura do të shfaqen këtu.</div>';
 

@@ -102,15 +102,27 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2.4rem 1.8rem}
 .pcard{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit}
 .pcard .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--panel-2)}
-.pcard .ph img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .4s}
-.pcard:hover .ph img{transform:scale(1.04)}
-.pcard .tag{position:absolute;left:0;top:1rem;background:var(--black);color:var(--gold);font-size:.78rem;padding:.35rem .8rem;border:1px solid var(--gold-dark);border-left:0}
+.pcard .slides{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.pcard .slides::-webkit-scrollbar{display:none}
+.pcard .slide{flex:0 0 100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always}
+.pcard .ph img{width:100%;height:100%;object-fit:cover;-webkit-user-drag:none;user-select:none}
+.sl-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(10,9,8,.72);color:#fff;font-size:1.3rem;line-height:1;display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .2s,border-color .2s,color .2s}
+.sl-btn.prev{left:.6rem}.sl-btn.next{right:.6rem}
+.sl-btn:hover{border-color:var(--gold);color:var(--gold)}
+.pcard:hover .sl-btn,.sl-btn:focus-visible{opacity:1}
+@media (hover:none){.sl-btn{opacity:.85;width:32px;height:32px;font-size:1.15rem}}
+div.slides{cursor:pointer}
+.dots{position:absolute;left:50%;bottom:.7rem;transform:translateX(-50%);display:flex;gap:5px;z-index:2;pointer-events:none}
+.dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);transition:background .2s,transform .2s}
+.dots i.on{background:#fff;transform:scale(1.25)}
+.pcard .tag{z-index:2;position:absolute;left:0;top:1rem;background:var(--black);color:var(--gold);font-size:.78rem;padding:.35rem .8rem;border:1px solid var(--gold-dark);border-left:0}
 .pcard .tag.qira{background:var(--gold);color:var(--black);border-color:var(--gold)}
 .pcard .fav{position:absolute;right:.8rem;top:.8rem;z-index:2;width:40px;height:40px;border-radius:50%;background:rgba(10,9,8,.7);border:1px solid rgba(255,255,255,.12);display:grid;place-items:center;cursor:pointer;color:#fff;transition:background .2s,color .2s}
 .pcard .fav:hover{color:var(--gold)}
 .pcard .fav svg{width:18px;height:18px}
 .fav[aria-pressed="true"] svg{fill:var(--gold);stroke:var(--gold)}
-.pcard .cnt{position:absolute;right:.8rem;bottom:.8rem;background:rgba(10,9,8,.7);font-size:.75rem;padding:.2rem .55rem;border-radius:2px}
+.pcard .cnt{position:absolute;right:.8rem;bottom:.8rem;z-index:2;background:rgba(10,9,8,.7);font-size:.75rem;padding:.2rem .55rem;border-radius:2px;pointer-events:none}
+.pcard .cnt b{font-weight:600}
 .pcard .info{padding:1.1rem 0 0;display:grid;gap:.3rem}
 .pcard .price{font-family:var(--serif);font-size:1.6rem;color:var(--gold);line-height:1.1}
 .pcard .price small{font-family:var(--sans);font-size:.82rem;color:var(--muted)}
@@ -186,6 +198,7 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
 .chat-h .av img{height:34px;width:auto}
 .chat-h b{display:block;font-weight:500}
 .chat-h small{color:var(--ok);font-size:.78rem}
+.msg.bot b{font-weight:600;color:var(--gold-light)}
 .chat-h .icon-btn{margin-left:auto;width:36px;height:36px}
 .chat-body{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.7rem;scroll-behavior:smooth}
 .msg{max-width:86%;padding:.7rem .9rem;font-size:.92rem;line-height:1.5;border-radius:4px}
@@ -206,3 +219,10 @@ section{padding:clamp(3.5rem,8vw,6.5rem) 0}
 .chat-f{display:flex;gap:.5rem;padding:.8rem;border-top:1px solid var(--line)}
 .chat-f .input{min-height:44px}
 .chat-f .btn{min-height:44px;width:44px;padding:0}
+
+/* sugjerimet e lagjeve */
+.ac{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:40;list-style:none;margin:0;padding:.3rem 0;background:var(--panel-2);border:1px solid var(--gold-dark);max-height:min(320px,50vh);overflow-y:auto;box-shadow:0 16px 40px rgba(0,0,0,.55)}
+.ac li{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.7rem .95rem;cursor:pointer;font-size:.95rem}
+.ac li small{color:var(--muted);font-size:.78rem;white-space:nowrap}
+.ac li.on,.ac li:hover{background:rgba(207,174,136,.12)}
+.ac mark{background:none;color:var(--gold);font-weight:600}

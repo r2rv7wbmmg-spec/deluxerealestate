@@ -90,7 +90,7 @@
   }
 
   /* ---------- skeleti ---------- */
-  const ADMIN_VIEWS = { paneli: 'Paneli', leads: 'Leads', opportunitete: 'Opportunitete', raporti: 'Raporti', miratime: 'Miratime', pronat: 'Pronat', kerkesat: 'Kërkesat', agjentet: 'Agjentët', abonentet: 'Abonentët', llogaria: 'Llogaria' };
+  const ADMIN_VIEWS = { paneli: 'Paneli', leads: 'Leads', opportunitete: 'Opportunitete', raporti: 'Raporti', miratime: 'Miratime', pronat: 'Pronat', kerkesat: 'Kërkesat', agjentet: 'Agjentët', abonentet: 'Abonentët', faqja: 'Faqja', llogaria: 'Llogaria' };
   const AGENT_VIEWS = { paneli: 'Paneli', leads: 'Leads', opportunitete: 'Opportunitete', pronat: 'Pronat e mia', kerkesat: 'Kërkesat', llogaria: 'Llogaria' };
   let VIEWS = ADMIN_VIEWS;
   function renderShell() {
@@ -118,7 +118,7 @@
     const view = VIEWS[v] ? v : 'paneli';
     $$('#sidenav nav a').forEach(a => a.classList.toggle('on', a.dataset.v === view));
     $('#view').innerHTML = '<div class="skeleton" style="height:60vh"></div>';
-    try { await ({ paneli, leads, opportunitete, raporti, miratime, pronat, kerkesat, agjentet, abonentet, llogaria })[view](); }
+    try { await ({ paneli, leads, opportunitete, raporti, miratime, pronat, kerkesat, agjentet, abonentet, faqja, llogaria })[view](); }
     catch (e) { if (USER) $('#view').innerHTML = `<div class="empty"><h3>Gabim</h3>${esc(e.message)}</div>`; }
   }
   window.addEventListener('hashchange', route);
@@ -289,6 +289,7 @@
       $('#p-agent').innerHTML = '<option value="">Pa agjent</option>' + agentsCache.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
     }
     $('#pm-title').textContent = id ? 'Ndrysho pronën' : 'Pronë e re';
+    setTimeout(() => fillZoneList(pf.elements.city.value), 0);
     if (id) {
       try {
         const p = await api('/api/admin/properties/' + id);
@@ -656,6 +657,54 @@
     });
   }
 
+  /* ---------- faqja: foto kryesore dhe tekstet e hyrjes ---------- */
+  async function faqja() {
+    const [s, props] = await Promise.all([api('/api/admin/settings'), api('/api/admin/properties?approval=approved&status=active')]);
+    $('#view').innerHTML = `<div class="top"><h1>Faqja kryesore</h1><a class="btn ghost" href="/" target="_blank">Shiko faqen</a></div>
+      <form class="panel" id="hs" style="max-width:760px;display:grid;gap:1.2rem" novalidate>
+        <h2>Fotoja e madhe në hyrje</h2>
+        <div class="hero-pick"><div class="hero-prev" id="hs-prev"></div>
+          <div style="display:grid;gap:.6rem;align-content:start">
+            <label class="btn ghost sm" for="hs-file" style="justify-self:start">Ngarko foto</label><input type="file" id="hs-file" accept="image/jpeg,image/png,image/webp" hidden>
+            <button class="btn ghost sm" type="button" id="hs-clear" style="justify-self:start">Hiq foton</button>
+            <small class="muted">Foto vertikale ose katrore, mundësisht e ndriçuar mirë. Pa foto, faqja tregon foton e një prone të përzgjedhur, ose logon nëse nuk ka asnjë.</small>
+          </div></div>
+        <input type="hidden" name="hero_image" id="hs-img">
+        <div class="field"><label for="hs-prop">Prona që shfaqet poshtë fotos (opsionale)</label>
+          <select class="select" id="hs-prop" name="hero_property_id"><option value="">Asnjë – vetëm fotoja</option>${props.map(p => `<option value="${p.id}">${esc(p.code)} – ${esc(p.title)}</option>`).join('')}</select>
+          <small class="muted">Klienti e shtyp dhe hap direkt pronën. Nëse nuk ngarkoni foto, përdoret fotoja e kësaj prone.</small></div>
+        <h2 style="margin-top:.6rem">Tekstet</h2>
+        <div class="field"><label for="hs-title">Titulli i madh</label><input class="input" id="hs-title" name="hero_title" maxlength="140" placeholder="Prona elitare të tipologjive të ndryshme nga çdo cep i *Shqipërisë*, të përzgjedhura për klientët tanë">
+          <small class="muted">Fjalën që doni me ngjyrë ari vendoseni mes yjeve, p.sh. <b style="color:var(--text)">*bregdet*</b>. Lëreni bosh për tekstin e parazgjedhur.</small></div>
+        <div class="field"><label for="hs-text">Teksti poshtë titullit</label><textarea class="textarea" id="hs-text" name="hero_text" maxlength="300" style="min-height:80px" placeholder="Vila, apartamente dhe hapësira biznesi që i kemi parë vetë…"></textarea></div>
+        <div style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap"><button class="btn" type="submit">Ruaj ndryshimet</button><p class="form-msg" id="hs-msg" style="margin:0"></p></div>
+      </form>`;
+    const f = $('#hs');
+    f.elements.hero_image.value = s.hero_image || ''; f.elements.hero_property_id.value = s.hero_property_id || '';
+    f.elements.hero_title.value = s.hero_title || ''; f.elements.hero_text.value = s.hero_text || '';
+    const prev = () => {
+      const p = props.find(x => String(x.id) === f.elements.hero_property_id.value);
+      const src = f.elements.hero_image.value || p?.images?.[0] || '';
+      $('#hs-prev').innerHTML = src ? `<img src="${esc(src)}" alt="" onerror="this.src='${FALLBACK}'">` : `<img src="/img/logo-full.png" alt="" style="object-fit:contain;padding:1.5rem;background:var(--black)">`;
+      $('#hs-clear').hidden = !f.elements.hero_image.value;
+    };
+    prev();
+    f.elements.hero_property_id.addEventListener('change', prev);
+    $('#hs-file').addEventListener('change', async e => {
+      const file = e.target.files[0]; if (!file) return;
+      $('#hs-msg').className = 'form-msg'; $('#hs-msg').textContent = 'Po ngarkohet…';
+      try { f.elements.hero_image.value = await upload(file); prev(); $('#hs-msg').textContent = 'Fotoja u ngarkua – shtypni “Ruaj ndryshimet”.'; }
+      catch (err) { $('#hs-msg').className = 'form-msg err'; $('#hs-msg').textContent = err.message; }
+      e.target.value = '';
+    });
+    $('#hs-clear').addEventListener('click', () => { f.elements.hero_image.value = ''; prev(); });
+    f.addEventListener('submit', async e => {
+      e.preventDefault();
+      try { await api('/api/admin/settings', { method: 'PUT', body: Object.fromEntries(new FormData(f)) }); $('#hs-msg').className = 'form-msg ok'; $('#hs-msg').textContent = 'U ruajt. Ndryshimet duken menjëherë në faqe.'; toast('Faqja kryesore u përditësua.'); }
+      catch (err) { $('#hs-msg').className = 'form-msg err'; $('#hs-msg').textContent = err.message; }
+    });
+  }
+
   /* ---------- llogaria ---------- */
   async function llogaria() {
     $('#view').innerHTML = `<div class="top"><h1>Llogaria</h1></div>
@@ -671,6 +720,16 @@
       try { const r = await api('/api/admin/password', { method: 'POST', body: f }); m.className = 'form-msg ok'; m.textContent = r.message; e.target.reset(); } catch (err) { m.className = 'form-msg err'; m.textContent = err.message; }
     });
   }
+
+  /* ---------- lagjet si sugjerime në formularë ---------- */
+  let ZONES = {};
+  fetch('/api/meta').then(r => r.json()).then(m => { ZONES = m.zones || {}; fillZoneList(); $('#zone-city-list').innerHTML = [...$$('#city-list option').map(o => o.value), ...Object.entries(ZONES).flatMap(([c, l]) => l.map(z => `${z}, ${c}`))].map(v => `<option value="${esc(v)}">`).join(''); }).catch(() => {});
+  function fillZoneList(city) {
+    const list = city && ZONES[city] ? ZONES[city] : Object.values(ZONES).flat();
+    $('#zone-list').innerHTML = list.map(z => `<option value="${esc(z)}">`).join('');
+  }
+  $('#p-city').addEventListener('input', e => fillZoneList(e.target.value.trim()));
+  $('#l-city').setAttribute('list', 'zone-city-list');
 
   /* ---------- nisja ---------- */
   api('/api/admin/me').then(u => { USER = u; renderShell(); }).catch(() => { if (!USER) renderLogin(); });

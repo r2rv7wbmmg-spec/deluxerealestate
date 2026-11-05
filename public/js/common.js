@@ -68,10 +68,16 @@ const DL = (() => {
     const specs = p.type === 'Tokë'
       ? `<span>${I.area}${fmt(p.area)} m²</span>`
       : `<span>${I.area}${fmt(p.area)} m²</span>${p.rooms ? `<span>${I.bed}${p.rooms} ${roomsLabel(p)}</span>` : ''}${p.bathrooms ? `<span>${I.bath}${p.bathrooms}</span>` : ''}`;
+    const imgs = (p.images.length ? p.images : [FALLBACK]).slice(0, 10), many = imgs.length > 1;
     return `<article class="pcard">
-      <a href="/property.html?id=${p.id}" class="ph" aria-label="${esc(p.title)}">${imgTag(p.images[0], p.title)}
+      <div class="ph">
+        ${many
+          ? `<div class="slides" role="group" aria-roledescription="galeri" aria-label="Fotot e ${esc(p.title)}">${imgs.map((src, i) => `<span class="slide">${imgTag(src, `${p.title} – foto ${i + 1}`)}</span>`).join('')}</div>`
+          : `<a href="/property.html?id=${p.id}" class="slides" aria-label="${esc(p.title)}" draggable="false"><span class="slide">${imgTag(imgs[0], p.title)}</span></a>`}
         <span class="tag ${p.deal}">${p.deal === 'shitje' ? 'Në shitje' : 'Me qira'}</span>
-        ${p.images.length > 1 ? `<span class="cnt">${p.images.length} foto</span>` : ''}</a>
+        ${many ? `<button type="button" class="sl-btn prev" data-slide="-1" aria-label="Fotoja e mëparshme">‹</button><button type="button" class="sl-btn next" data-slide="1" aria-label="Fotoja tjetër">›</button>
+        ${imgs.length <= 6 ? `<span class="dots" aria-hidden="true">${imgs.map((_, i) => `<i${i ? '' : ' class="on"'}></i>`).join('')}</span>` : `<span class="cnt"><b>1</b> / ${imgs.length}</span>`}` : ''}
+      </div>
       <button class="fav" data-fav="${p.id}" aria-pressed="${fav}" aria-label="${fav ? 'Hiqe nga të ruajturat' : 'Ruaje pronën'}">${I.heart}</button>
       <a href="/property.html?id=${p.id}" class="info" style="text-decoration:none">
         <span class="price">${price(p)}</span>
@@ -147,11 +153,11 @@ const DL = (() => {
     wrap.innerHTML = `
       <a class="wa-side" data-site="wa" href="#" target="_blank" rel="noopener" aria-label="Na shkruani në WhatsApp">${I.wa}<span>WhatsApp</span></a>
       <section class="chat" id="chat" aria-label="Asistenti" aria-hidden="true">
-        <div class="chat-h"><span class="av"><img src="/img/logo-mark.png" alt=""></span><div><b>Asistenti De Luxe</b><small>Përgjigje të menjëhershme</small></div>
+        <div class="chat-h"><span class="av"><img src="/img/logo-mark.png" alt=""></span><div><b>Agjenti virtual · De Luxe</b><small>● Online tani</small></div>
           <button class="icon-btn" id="chat-close" aria-label="Mbyll asistentin">${I.close}</button></div>
         <div class="chat-body" id="chat-body" aria-live="polite"></div>
         <div class="chips" id="chat-chips"></div>
-        <form class="chat-f" id="chat-form"><label class="sr" for="chat-in">Pyetja juaj</label><input class="input" id="chat-in" placeholder="P.sh. apartament me qira në Tiranë" autocomplete="off" maxlength="400"><button class="btn" aria-label="Dërgo">${I.send}</button></form>
+        <form class="chat-f" id="chat-form"><label class="sr" for="chat-in">Pyetja juaj</label><input class="input" id="chat-in" placeholder="Shkruani mesazhin tuaj…" autocomplete="off" maxlength="400"><button class="btn" aria-label="Dërgo">${I.send}</button></form>
       </section>
       <button class="chat-fab" id="chat-fab" aria-controls="chat" aria-expanded="false"><span class="o">${I.chat}</span><span class="x">${I.close}</span><span class="lbl">Pyetje të shpejta</span></button>`;
     document.body.append(wrap);
@@ -163,7 +169,8 @@ const DL = (() => {
       const on = v ?? !document.body.classList.contains('chat-open');
       document.body.classList.toggle('chat-open', on);
       $('#chat').setAttribute('aria-hidden', !on); $('#chat-fab').setAttribute('aria-expanded', on);
-      if (on && !started) { started = true; add('Përshëndetje! Jam asistenti i De Luxe. Më pyesni për prona, çmime, vizita ose dokumente – ose zgjidhni një nga pyetjet më poshtë.', 'bot'); api('/api/chat/quick').then(d => setChips(d.quick)).catch(() => {}); }
+      if (on && !started) { started = true; const h = new Date().getHours(), g = h < 11 ? 'Mirëmëngjes' : h < 18 ? 'Mirëdita' : 'Mirëmbrëma';
+        add(`${g}! 👋 Jam agjenti virtual i <b>De Luxe Real Estate</b>. Si mund t’ju ndihmoj sot? Më pyesni për prona, çmime, vizita apo dokumente – ose zgjidhni një nga pyetjet më poshtë. 😊`, 'bot'); api('/api/chat/quick').then(d => setChips(d.quick)).catch(() => {}); }
       if (on) setTimeout(() => input.focus(), 200);
     }
     async function ask(text) {
@@ -172,13 +179,14 @@ const DL = (() => {
       const t = add('<span class="typing"><i></i><i></i><i></i></span>', 'bot'); t.style.padding = '0';
       try {
         const r = await api('/api/chat', { method: 'POST', body: { message: text } });
-        await new Promise(res => setTimeout(res, 350));
+        await new Promise(res => setTimeout(res, 550 + Math.min(900, (r.reply || '').length * 4)));
         let html = esc(r.reply);
         (r.properties || []).forEach(p => { html += `<a class="mini" href="/property.html?id=${p.id}"><img src="${esc(p.image || FALLBACK)}" alt="" onerror="this.src='${FALLBACK}'"><span><b>${esc(p.title)}</b><span>${fmt(p.price)} €${p.deal === 'qira' ? ' / muaj' : ''} · ${esc(p.city)}</span></span></a>`; });
-        if (r.link) html += `<p style="margin:.7rem 0 0"><a href="${esc(r.link)}">Shikoni të gjitha rezultatet</a></p>`;
-        if (r.whatsapp) html += `<p style="margin:.7rem 0 0"><a href="${waLink('Përshëndetje, kam një pyetje: ' + text)}" target="_blank" rel="noopener">Vazhdoni bisedën në WhatsApp</a></p>`;
+        if (r.after) html += `<p style="margin:.7rem 0 0">${esc(r.after)}</p>`;
+        if (r.link) html += `<p style="margin:.5rem 0 0"><a href="${esc(r.link)}">Shikoni të gjitha rezultatet</a></p>`;
+        if (r.whatsapp || r.link) html += `<p style="margin:.5rem 0 0"><a href="${waLink('Përshëndetje, ju shkruaj nga faqja juaj: ' + text)}" target="_blank" rel="noopener">💬 Fol me një agjent në WhatsApp</a></p>`;
         t.style.padding = ''; t.innerHTML = html; body.scrollTop = body.scrollHeight;
-        setChips(r.quick);
+        setChips(r.quick); requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
       } catch (e) { t.style.padding = ''; t.textContent = e.message; }
     }
     $('#chat-fab').addEventListener('click', () => open());
@@ -187,6 +195,91 @@ const DL = (() => {
     chips.addEventListener('click', e => { const b = e.target.closest('button'); if (b) ask(b.textContent); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('chat-open')) open(false); });
     return { open, ask };
+  }
+
+  /* ---------- fotot me rrëshqitje te kartat ---------- */
+  function syncSlider(box) {
+    const ph = box.closest('.ph'); if (!ph) return;
+    const n = box.children.length, i = Math.round(box.scrollLeft / Math.max(1, box.clientWidth));
+    ph.querySelectorAll('.dots i').forEach((d, k) => d.classList.toggle('on', k === i));
+    const c = ph.querySelector('.cnt b'); if (c) c.textContent = i + 1;
+  }
+  let raf = 0;
+  document.addEventListener('scroll', e => {
+    const box = e.target.classList?.contains('slides') ? e.target : null; if (!box) return;
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(() => syncSlider(box));
+  }, true);
+  const goSlide = (box, dir) => {
+    const n = box.children.length, i = Math.round(box.scrollLeft / Math.max(1, box.clientWidth));
+    const j = (i + dir + n) % n; // në fund kthehet te fotoja e parë
+    box.scrollTo({ left: j * box.clientWidth, behavior: 'smooth' });
+  };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-slide]');
+    if (b) { e.preventDefault(); e.stopPropagation(); goSlide(b.closest('.ph').querySelector('.slides'), Number(b.dataset.slide)); return; }
+    // Shtypja mbi foto te listimi kalon foton (ana e majtë = mbrapa, e djathta = para), nuk e hap pronën
+    const box = e.target.closest('div.slides');
+    if (box) { const r = box.getBoundingClientRect(); goSlide(box, e.clientX - r.left < r.width / 3 ? -1 : 1); }
+  }, true);
+
+  /* ---------- lagjet ---------- */
+  // Mbush listën e lagjeve sipas qytetit; zgjedhja e një lagjeje vendos vetë qytetin
+  function bindZones(citySel, zoneSel, wrap, zones) {
+    const fill = keep => {
+      const city = citySel.value, cur = keep ?? zoneSel.value;
+      const cities = city ? (zones[city] ? [city] : []) : Object.keys(zones);
+      wrap.hidden = !cities.length;
+      zoneSel.innerHTML = '<option value="">Të gjitha lagjet</option>' + cities.map(c => (cities.length > 1 ? `<optgroup label="${esc(c)}">` : '') + zones[c].map(z => `<option data-city="${esc(c)}" ${z === cur ? 'selected' : ''}>${esc(z)}</option>`).join('') + (cities.length > 1 ? '</optgroup>' : '')).join('');
+      if (cur && zoneSel.value !== cur) zoneSel.value = '';
+    };
+    let syncing = false;
+    citySel.addEventListener('change', () => { if (!syncing) fill(''); });
+    zoneSel.addEventListener('change', () => {
+      const c = zoneSel.selectedOptions[0]?.dataset.city;
+      if (c && citySel.value !== c) { const z = zoneSel.value; citySel.value = c; fill(z); syncing = true; citySel.dispatchEvent(new Event('change', { bubbles: true })); syncing = false; }
+    });
+    return fill;
+  }
+
+  /* ---------- sugjerime lagjesh gjatë shkrimit ---------- */
+  // Shkruani “bll”, “kom”, “tirana e”… dhe zgjidhni lagjen nga lista
+  const normTxt = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  function zoneAutocomplete(input, zones, cities, onPick) {
+    const items = [
+      ...[...new Set([...(cities || []), ...Object.keys(zones || {})])].map(c => ({ label: c, city: c, zone: '', kind: 'Qytet' })),
+      ...Object.entries(zones || {}).flatMap(([c, list]) => list.map(z => ({ label: z, city: c, zone: z, kind: `Zonë · ${c}` })))
+    ].map(x => ({ ...x, key: normTxt(x.label) }));
+    const wrap = input.parentElement; wrap.style.position = 'relative';
+    const box = document.createElement('ul'); box.className = 'ac'; box.setAttribute('role', 'listbox'); box.hidden = true;
+    wrap.append(box);
+    input.setAttribute('autocomplete', 'off'); input.setAttribute('role', 'combobox'); input.setAttribute('aria-autocomplete', 'list');
+    let list = [], active = -1;
+    const mark = (label, q) => {
+      const k = normTxt(label), i = k.indexOf(q);
+      return i < 0 ? esc(label) : esc(label.slice(0, i)) + '<mark>' + esc(label.slice(i, i + q.length)) + '</mark>' + esc(label.slice(i + q.length));
+    };
+    const close = () => { box.hidden = true; active = -1; input.setAttribute('aria-expanded', 'false'); };
+    const render = () => {
+      const q = normTxt(input.value);
+      if (q.length < 2) return close();
+      const score = x => x.key.startsWith(q) ? 0 : x.key.split(/\s+/).some(w => w.startsWith(q)) ? 1 : x.key.includes(q) ? 2 : 9;
+      list = items.map(x => ({ x, s: score(x) })).filter(o => o.s < 9).sort((a, b) => a.s - b.s || (a.x.zone ? 1 : 0) - (b.x.zone ? 1 : 0) || a.x.label.localeCompare(b.x.label, 'sq')).slice(0, 8).map(o => o.x);
+      if (!list.length) return close();
+      active = 0;
+      box.innerHTML = list.map((x, i) => `<li role="option" data-i="${i}" class="${i === active ? 'on' : ''}"><span>${mark(x.label, q)}</span><small>${esc(x.kind)}</small></li>`).join('');
+      box.hidden = false; input.setAttribute('aria-expanded', 'true');
+    };
+    const pick = i => { const x = list[i]; if (!x) return; close(); onPick(x); };
+    input.addEventListener('input', render);
+    input.addEventListener('focus', render);
+    input.addEventListener('keydown', e => {
+      if (box.hidden) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); active = (active + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length; $$('li', box).forEach((li, k) => li.classList.toggle('on', k === active)); }
+      else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); pick(active); }
+      else if (e.key === 'Escape') close();
+    });
+    box.addEventListener('pointerdown', e => { const li = e.target.closest('li'); if (li) { e.preventDefault(); pick(Number(li.dataset.i)); } });
+    input.addEventListener('blur', () => setTimeout(close, 150));
   }
 
   /* ---------- formularët e kërkesave ---------- */
@@ -227,5 +320,5 @@ const DL = (() => {
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 
-  return { $, $$, esc, fmt, api, meta, toast, favs, toggleFav, card, skeletons, price, imgTag, I, waLink, bindInquiry, roomsLabel, FALLBACK };
+  return { bindZones, zoneAutocomplete, $, $$, esc, fmt, api, meta, toast, favs, toggleFav, card, skeletons, price, imgTag, I, waLink, bindInquiry, roomsLabel, FALLBACK };
 })();
